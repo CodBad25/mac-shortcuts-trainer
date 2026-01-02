@@ -1,6 +1,10 @@
 # Mac Shortcuts Trainer
 
-Application web interactive pour apprendre et maîtriser les raccourcis clavier macOS.
+[![GitHub Pages](https://img.shields.io/badge/demo-live-brightgreen)](https://codbad25.github.io/mac-shortcuts-trainer/)
+
+Application web PWA interactive pour apprendre et maîtriser les raccourcis clavier macOS avec gamification.
+
+**[Essayer l'app](https://codbad25.github.io/mac-shortcuts-trainer/)**
 
 ## Fonctionnalités
 
@@ -32,9 +36,26 @@ Application web interactive pour apprendre et maîtriser les raccourcis clavier 
   - Quiz Parfait (100% sur un quiz)
 
 ### Bibliothèque
-- **75 raccourcis** organisés par catégorie
+- **75+ raccourcis** organisés par catégorie
 - Indicateur de maîtrise pour chaque raccourci
 - Filtrage par catégorie
+- Système de favoris (étoile)
+
+### Recherche
+- **Recherche par action** : Trouvez un raccourci en décrivant ce que vous voulez faire
+- **Traducteur Windows → Mac** : Convertissez vos raccourcis Windows en équivalent Mac
+- **Contribution** : Proposez de nouveaux raccourcis à ajouter
+
+### Paramètres
+- **Thème sombre** : Mode clair/sombre
+- **Sons de feedback** : Retour audio pour succès/erreur
+- **Filtre par difficulté** : Facile, Moyen, Difficile
+- **Favoris en premier** : Priorisez vos raccourcis favoris
+
+### PWA (Progressive Web App)
+- Installable sur mobile et desktop
+- Fonctionne hors ligne
+- Icône sur l'écran d'accueil
 
 ## Catégories de raccourcis
 
@@ -67,18 +88,28 @@ Application web interactive pour apprendre et maîtriser les raccourcis clavier 
 
 ## Installation
 
-Aucune installation requise. Ouvrir simplement le fichier HTML dans un navigateur :
+### Option 1 : En ligne (recommandé)
+Visitez [codbad25.github.io/mac-shortcuts-trainer](https://codbad25.github.io/mac-shortcuts-trainer/)
 
+### Option 2 : PWA
+1. Ouvrez l'app dans Chrome/Safari
+2. Cliquez sur "Installer" dans la bannière ou le menu du navigateur
+3. L'app sera disponible comme une application native
+
+### Option 3 : Local
 ```bash
-open index.html
+git clone https://github.com/CodBad25/mac-shortcuts-trainer.git
+open mac-shortcuts-trainer/index.html
 ```
 
 ## Technologies
 
-- HTML5
-- CSS3 (Variables CSS, Flexbox, Grid, Animations)
+- HTML5 (single-file application)
+- CSS3 (Variables CSS, Flexbox, Grid, Animations, Dark mode)
 - JavaScript vanilla (ES6+)
-- LocalStorage pour la sauvegarde de progression
+- Web Audio API (sons de feedback)
+- Service Worker (cache offline)
+- LocalStorage (sauvegarde de progression)
 
 ## Stockage des données
 
