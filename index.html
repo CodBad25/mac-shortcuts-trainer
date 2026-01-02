@@ -1,0 +1,2836 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mac Shortcuts Trainer</title>
+
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Apprenez les raccourcis clavier Mac avec la gamification">
+    <meta name="theme-color" content="#007AFF">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Shortcuts">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #007AFF;
+            --primary-dark: #0056CC;
+            --success: #34C759;
+            --warning: #FF9500;
+            --danger: #FF3B30;
+            --bg: #F2F2F7;
+            --card: #FFFFFF;
+            --text: #1C1C1E;
+            --text-secondary: #8E8E93;
+            --border: #E5E5EA;
+        }
+
+        /* Dark Theme */
+        [data-theme="dark"] {
+            --bg: #1C1C1E;
+            --card: #2C2C2E;
+            --text: #FFFFFF;
+            --text-secondary: #8E8E93;
+            --border: #3A3A3C;
+            --primary: #0A84FF;
+            --primary-dark: #0056CC;
+        }
+
+        [data-theme="dark"] header {
+            background: linear-gradient(135deg, #0A84FF, #0056CC);
+        }
+
+        [data-theme="dark"] .flashcard-front {
+            background: linear-gradient(135deg, #0A84FF, #0056CC);
+        }
+
+        [data-theme="dark"] .key {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        [data-theme="dark"] .flashcard-back .key,
+        [data-theme="dark"] .shortcut-keys .key {
+            background: var(--bg);
+            border-color: var(--border);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stats {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 0.5rem;
+            position: sticky;
+            top: 70px;
+            z-index: 99;
+        }
+
+        .nav-tabs {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding: 0.25rem;
+        }
+
+        .nav-tab {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: transparent;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover {
+            background: var(--bg);
+        }
+
+        .nav-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        /* Dashboard */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .progress-ring {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1rem;
+        }
+
+        .progress-ring circle {
+            fill: none;
+            stroke-width: 8;
+        }
+
+        .progress-ring .bg {
+            stroke: var(--border);
+        }
+
+        .progress-ring .progress {
+            stroke: var(--primary);
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: center;
+            transition: stroke-dashoffset 0.5s;
+        }
+
+        .progress-text {
+            text-anchor: middle;
+            dominant-baseline: middle;
+            font-size: 1.5rem;
+            font-weight: 700;
+            fill: var(--text);
+        }
+
+        .level-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, var(--warning), #FFB84D);
+            color: white;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .badges-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .badge {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: var(--bg);
+            opacity: 0.3;
+            transition: all 0.3s;
+        }
+
+        .badge.unlocked {
+            opacity: 1;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            box-shadow: 0 2px 8px rgba(255, 165, 0, 0.3);
+        }
+
+        /* Flashcard */
+        .flashcard-container {
+            perspective: 1000px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .flashcard {
+            width: 100%;
+            min-height: 300px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .flashcard-front {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .flashcard-back {
+            background: var(--card);
+            transform: rotateY(180deg);
+            border: 2px solid var(--border);
+        }
+
+        .flashcard-action {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .shortcut-display {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        .key {
+            background: rgba(255,255,255,0.2);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            min-width: 50px;
+            text-align: center;
+            border: 2px solid rgba(255,255,255,0.3);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.2);
+        }
+
+        .flashcard-back .key {
+            background: var(--bg);
+            color: var(--text);
+            border-color: var(--border);
+        }
+
+        .flashcard-hint {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 1rem;
+        }
+
+        .flashcard-category {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            padding: 0.25rem 0.75rem;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        .flashcard-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-outline:hover {
+            background: var(--bg);
+        }
+
+        /* Quiz Mode */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .quiz-progress {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.3s;
+        }
+
+        .quiz-score {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .quiz-question {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .quiz-prompt {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .quiz-action {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .keyboard-input {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            min-height: 60px;
+            padding: 1rem;
+            background: var(--bg);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .keyboard-input .key {
+            background: var(--card);
+            color: var(--text);
+            border: 2px solid var(--primary);
+            animation: keyPop 0.2s;
+        }
+
+        @keyframes keyPop {
+            0% { transform: scale(0.8); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .keyboard-hint {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .quiz-feedback {
+            padding: 1rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: 600;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .quiz-feedback.correct {
+            background: rgba(52, 199, 89, 0.1);
+            color: var(--success);
+        }
+
+        .quiz-feedback.incorrect {
+            background: rgba(255, 59, 48, 0.1);
+            color: var(--danger);
+        }
+
+        /* Category Selection */
+        .category-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .chip {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            background: var(--bg);
+            border: 2px solid transparent;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .chip:hover {
+            border-color: var(--primary);
+        }
+
+        .chip.selected {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Shortcuts List */
+        .shortcuts-list {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .shortcut-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: var(--bg);
+            border-radius: 12px;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .shortcut-item:hover {
+            background: var(--border);
+        }
+
+        .shortcut-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .shortcut-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .shortcut-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .shortcut-keys {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .shortcut-keys .key {
+            background: var(--card);
+            color: var(--text);
+            padding: 0.5rem 0.75rem;
+            font-size: 0.9rem;
+            border: 1px solid var(--border);
+        }
+
+        .mastery-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-left: 0.5rem;
+        }
+
+        .mastery-0 { background: var(--border); }
+        .mastery-1 { background: var(--danger); }
+        .mastery-2 { background: var(--warning); }
+        .mastery-3 { background: var(--success); }
+
+        /* Streak Animation */
+        .streak-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, var(--warning), #FFD700);
+            color: white;
+            padding: 2rem 3rem;
+            border-radius: 20px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            z-index: 1000;
+            animation: streakPop 0.5s ease-out;
+            display: none;
+        }
+
+        .streak-popup.show {
+            display: block;
+        }
+
+        @keyframes streakPop {
+            0% { transform: translate(-50%, -50%) scale(0); }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+            100% { transform: translate(-50%, -50%) scale(1); }
+        }
+
+        /* XP Gain Animation */
+        .xp-gain {
+            position: fixed;
+            pointer-events: none;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--success);
+            animation: xpFloat 1s ease-out forwards;
+            z-index: 1000;
+        }
+
+        @keyframes xpFloat {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-50px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                justify-content: center;
+                text-align: center;
+            }
+
+            .stats {
+                justify-content: center;
+            }
+
+            nav {
+                top: auto;
+                position: relative;
+            }
+
+            .flashcard-face {
+                padding: 1.5rem;
+            }
+
+            .flashcard-action {
+                font-size: 1.25rem;
+            }
+
+            .btn {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 1.25rem;
+            }
+
+            .stat-value {
+                font-size: 1rem;
+            }
+
+            .nav-tab {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+
+            main {
+                padding: 1rem;
+            }
+
+            .card {
+                padding: 1rem;
+            }
+        }
+
+        /* Start Screen */
+        .start-screen {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .start-screen h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .mode-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .mode-btn {
+            padding: 1.5rem 2rem;
+            border-radius: 16px;
+            border: 2px solid var(--border);
+            background: var(--card);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            min-width: 150px;
+        }
+
+        .mode-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .mode-btn-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .mode-btn-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .mode-btn-desc {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Results Screen */
+        .results-screen {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .results-score {
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 1rem 0;
+        }
+
+        .results-details {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+
+        .result-stat {
+            text-align: center;
+        }
+
+        .result-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .result-stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Search Section Styles */
+        .search-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+        }
+
+        .translator-keys {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            padding: 1rem;
+            background: var(--bg);
+            border-radius: 12px;
+            min-height: 60px;
+            align-items: center;
+        }
+
+        .translator-keys .key {
+            background: var(--card);
+            color: var(--text);
+            border: 2px solid var(--primary);
+        }
+
+        .key-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            align-items: center;
+        }
+
+        .key-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--card);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .key-btn:hover {
+            border-color: var(--primary);
+            background: var(--bg);
+        }
+
+        .key-input {
+            padding: 0.5rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            width: 80px;
+            text-align: center;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .key-input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .translator-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            justify-content: flex-end;
+        }
+
+        .translation-result {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+
+        .translation-arrow {
+            font-size: 2rem;
+            color: var(--primary);
+            margin: 0.5rem 0;
+        }
+
+        .translation-mac {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(0,122,255,0.1), rgba(0,86,204,0.1));
+            border-radius: 16px;
+            border: 2px solid var(--primary);
+        }
+
+        .translation-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .no-translation {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: rgba(255,59,48,0.1);
+            border-radius: 12px;
+            text-align: center;
+            color: var(--danger);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .suggest-form .category-chips {
+            margin-bottom: 0;
+        }
+
+        .search-highlight {
+            background: rgba(255, 149, 0, 0.3);
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+
+        /* Delete button for user shortcuts */
+        .delete-shortcut {
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+
+        .delete-shortcut:hover {
+            opacity: 0.8;
+        }
+
+        /* Settings Toggle */
+        .settings-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .settings-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(30deg);
+        }
+
+        /* Settings Panel */
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 300px;
+            height: 100vh;
+            background: var(--card);
+            box-shadow: -4px 0 20px rgba(0,0,0,0.1);
+            z-index: 200;
+            transition: right 0.3s ease;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .settings-panel.open {
+            right: 0;
+        }
+
+        .settings-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 199;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .settings-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .settings-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .settings-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .setting-info {
+            flex: 1;
+        }
+
+        .setting-label {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .setting-desc {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 28px;
+            background: var(--border);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: var(--primary);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(22px);
+        }
+
+        /* Favorite Star */
+        .favorite-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0.3;
+            transition: all 0.2s;
+            padding: 0.25rem;
+        }
+
+        .favorite-btn:hover {
+            opacity: 0.6;
+            transform: scale(1.2);
+        }
+
+        .favorite-btn.active {
+            opacity: 1;
+            color: #FFD700;
+        }
+
+        /* Difficulty filter */
+        .difficulty-chips {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .difficulty-chip {
+            padding: 0.4rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .difficulty-chip.easy {
+            background: rgba(52, 199, 89, 0.1);
+            color: var(--success);
+        }
+
+        .difficulty-chip.medium {
+            background: rgba(255, 149, 0, 0.1);
+            color: var(--warning);
+        }
+
+        .difficulty-chip.hard {
+            background: rgba(255, 59, 48, 0.1);
+            color: var(--danger);
+        }
+
+        .difficulty-chip.selected {
+            border-color: currentColor;
+        }
+
+        /* Install PWA Banner */
+        .install-banner {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card);
+            padding: 1rem 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            display: none;
+            align-items: center;
+            gap: 1rem;
+            z-index: 150;
+            max-width: 90%;
+        }
+
+        .install-banner.show {
+            display: flex;
+        }
+
+        .install-banner-text {
+            flex: 1;
+        }
+
+        .install-banner-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .install-banner-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .install-banner-close {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <span>Mac Shortcuts Trainer</span>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="totalXP">0</div>
+                    <div class="stat-label">XP Total</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="currentLevel">1</div>
+                    <div class="stat-label">Niveau</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="currentStreak">0</div>
+                    <div class="stat-label">Streak</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="masteredCount">0</div>
+                    <div class="stat-label">Maîtrisés</div>
+                </div>
+                <button class="settings-btn" onclick="toggleSettings()" title="Réglages">⚙️</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Settings Panel -->
+    <div class="settings-overlay" id="settingsOverlay" onclick="toggleSettings()"></div>
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+            <span class="settings-title">Réglages</span>
+            <button class="settings-close" onclick="toggleSettings()">×</button>
+        </div>
+
+        <div class="setting-item">
+            <div class="setting-info">
+                <div class="setting-label">Thème sombre</div>
+                <div class="setting-desc">Activer le mode nuit</div>
+            </div>
+            <div class="toggle-switch" id="darkModeToggle" onclick="toggleDarkMode()"></div>
+        </div>
+
+        <div class="setting-item">
+            <div class="setting-info">
+                <div class="setting-label">Sons</div>
+                <div class="setting-desc">Feedback sonore</div>
+            </div>
+            <div class="toggle-switch" id="soundToggle" onclick="toggleSound()"></div>
+        </div>
+
+        <div class="setting-item">
+            <div class="setting-info">
+                <div class="setting-label">Afficher favoris d'abord</div>
+                <div class="setting-desc">Dans la bibliothèque</div>
+            </div>
+            <div class="toggle-switch" id="favoritesFirstToggle" onclick="toggleFavoritesFirst()"></div>
+        </div>
+
+        <div class="setting-item" style="flex-direction: column; align-items: flex-start;">
+            <div class="setting-info" style="margin-bottom: 0.75rem;">
+                <div class="setting-label">Filtrer par difficulté</div>
+                <div class="setting-desc">Basé sur votre maîtrise</div>
+            </div>
+            <div class="difficulty-chips">
+                <div class="difficulty-chip easy selected" onclick="toggleDifficulty('easy')">Facile</div>
+                <div class="difficulty-chip medium selected" onclick="toggleDifficulty('medium')">Moyen</div>
+                <div class="difficulty-chip hard selected" onclick="toggleDifficulty('hard')">Difficile</div>
+            </div>
+        </div>
+
+        <div class="setting-item" style="border-bottom: none;">
+            <div class="setting-info">
+                <div class="setting-label">Installer l'app</div>
+                <div class="setting-desc">Ajouter au dock</div>
+            </div>
+            <button class="btn btn-primary" id="installBtn" onclick="installPWA()" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Installer</button>
+        </div>
+    </div>
+
+    <!-- Install PWA Banner -->
+    <div class="install-banner" id="installBanner">
+        <div class="install-banner-text">
+            <div class="install-banner-title">Installer l'application</div>
+            <div class="install-banner-desc">Accédez rapidement depuis votre dock</div>
+        </div>
+        <button class="btn btn-primary" onclick="installPWA()" style="padding: 0.5rem 1rem;">Installer</button>
+        <button class="install-banner-close" onclick="dismissInstallBanner()">×</button>
+    </div>
+
+    <nav>
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-section="dashboard">Tableau de bord</button>
+            <button class="nav-tab" data-section="flashcards">Flashcards</button>
+            <button class="nav-tab" data-section="quiz">Quiz</button>
+            <button class="nav-tab" data-section="library">Bibliothèque</button>
+            <button class="nav-tab" data-section="search">Recherche</button>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section active">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3 class="card-title">Progression</h3>
+                    <svg class="progress-ring" viewBox="0 0 120 120">
+                        <circle class="bg" cx="60" cy="60" r="50"/>
+                        <circle class="progress" cx="60" cy="60" r="50"
+                                stroke-dasharray="314"
+                                stroke-dashoffset="314"
+                                id="progressCircle"/>
+                        <text class="progress-text" x="60" y="60" id="progressPercent">0%</text>
+                    </svg>
+                    <div style="text-align: center;">
+                        <span id="masteredText">0</span> / <span id="totalShortcuts">0</span> raccourcis maîtrisés
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Niveau actuel</h3>
+                    <div style="text-align: center; margin: 1rem 0;">
+                        <div class="level-badge">
+                            <span>Niveau</span>
+                            <span id="levelDisplay">1</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar" style="margin-top: 1rem;">
+                        <div class="progress-fill" id="levelProgress" style="width: 0%"></div>
+                    </div>
+                    <div style="text-align: center; margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-secondary);">
+                        <span id="xpToNext">100</span> XP pour le niveau suivant
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Badges</h3>
+                    <div class="badges-grid" id="badgesContainer">
+                        <!-- Badges will be populated by JS -->
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="card-title">Actions rapides</h3>
+                    <div class="mode-buttons">
+                        <button class="mode-btn" onclick="startQuickPractice()">
+                            <div class="mode-btn-icon">🎴</div>
+                            <div class="mode-btn-title">Réviser</div>
+                            <div class="mode-btn-desc">5 flashcards rapides</div>
+                        </button>
+                        <button class="mode-btn" onclick="startQuickQuiz()">
+                            <div class="mode-btn-icon">⚡</div>
+                            <div class="mode-btn-title">Quiz Rapide</div>
+                            <div class="mode-btn-desc">10 questions</div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Flashcards Section -->
+        <section id="flashcards" class="section">
+            <div class="card">
+                <h3 class="card-title">Catégories</h3>
+                <div class="category-chips" id="flashcardCategories">
+                    <!-- Categories will be populated by JS -->
+                </div>
+            </div>
+
+            <div id="flashcardStart" class="card start-screen">
+                <h2>Mode Flashcards</h2>
+                <p>Apprenez les raccourcis avec la répétition espacée</p>
+                <div class="mode-buttons">
+                    <button class="mode-btn" onclick="startFlashcards('new')">
+                        <div class="mode-btn-icon">🆕</div>
+                        <div class="mode-btn-title">Nouveaux</div>
+                        <div class="mode-btn-desc">Apprendre de nouveaux raccourcis</div>
+                    </button>
+                    <button class="mode-btn" onclick="startFlashcards('review')">
+                        <div class="mode-btn-icon">🔄</div>
+                        <div class="mode-btn-title">Révision</div>
+                        <div class="mode-btn-desc">Revoir les raccourcis à réviser</div>
+                    </button>
+                    <button class="mode-btn" onclick="startFlashcards('all')">
+                        <div class="mode-btn-icon">📚</div>
+                        <div class="mode-btn-title">Tous</div>
+                        <div class="mode-btn-desc">Pratiquer tous les raccourcis</div>
+                    </button>
+                </div>
+            </div>
+
+            <div id="flashcardArea" class="card" style="display: none;">
+                <div class="flashcard-container">
+                    <div class="flashcard" id="flashcard" onclick="flipCard()">
+                        <div class="flashcard-face flashcard-front">
+                            <div class="flashcard-category" id="fcCategory">Système</div>
+                            <div class="flashcard-action" id="fcAction">Copier</div>
+                            <div class="flashcard-hint">Cliquez pour voir le raccourci</div>
+                        </div>
+                        <div class="flashcard-face flashcard-back">
+                            <div class="shortcut-display" id="fcKeys">
+                                <span class="key">⌘</span>
+                                <span class="key">C</span>
+                            </div>
+                            <div id="fcDescription" style="color: var(--text-secondary); margin-top: 1rem;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flashcard-buttons" id="fcButtons">
+                    <button class="btn btn-danger" onclick="rateCard(1)">😕 Difficile</button>
+                    <button class="btn btn-warning" onclick="rateCard(2)">🤔 Moyen</button>
+                    <button class="btn btn-success" onclick="rateCard(3)">😄 Facile</button>
+                </div>
+                <div style="text-align: center; margin-top: 1rem;">
+                    <span id="fcProgress">1 / 10</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section id="quiz" class="section">
+            <div class="card">
+                <h3 class="card-title">Catégories</h3>
+                <div class="category-chips" id="quizCategories">
+                    <!-- Categories will be populated by JS -->
+                </div>
+            </div>
+
+            <div id="quizStart" class="card start-screen">
+                <h2>Mode Quiz</h2>
+                <p>Testez vos connaissances en tapant les raccourcis !</p>
+                <div class="mode-buttons">
+                    <button class="mode-btn" onclick="startQuiz(10)">
+                        <div class="mode-btn-icon">⚡</div>
+                        <div class="mode-btn-title">Rapide</div>
+                        <div class="mode-btn-desc">10 questions</div>
+                    </button>
+                    <button class="mode-btn" onclick="startQuiz(20)">
+                        <div class="mode-btn-icon">🎯</div>
+                        <div class="mode-btn-title">Standard</div>
+                        <div class="mode-btn-desc">20 questions</div>
+                    </button>
+                    <button class="mode-btn" onclick="startQuiz(50)">
+                        <div class="mode-btn-icon">🏆</div>
+                        <div class="mode-btn-title">Marathon</div>
+                        <div class="mode-btn-desc">50 questions</div>
+                    </button>
+                </div>
+            </div>
+
+            <div id="quizArea" class="card" style="display: none;">
+                <div class="quiz-header">
+                    <div class="quiz-progress">
+                        <div style="margin-bottom: 0.5rem;">Question <span id="quizCurrent">1</span> / <span id="quizTotal">10</span></div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="quizProgressBar" style="width: 10%"></div>
+                        </div>
+                    </div>
+                    <div class="quiz-score">Score: <span id="quizScore">0</span></div>
+                </div>
+
+                <div class="quiz-question">
+                    <div class="quiz-prompt" id="quizPrompt">Copier la sélection</div>
+                    <div class="quiz-action">Tapez le raccourci clavier correspondant</div>
+
+                    <div class="keyboard-input" id="keyboardInput">
+                        <span style="color: var(--text-secondary);">Appuyez sur les touches...</span>
+                    </div>
+
+                    <div class="keyboard-hint">
+                        Maintenez les touches modificateurs puis appuyez sur la touche principale
+                    </div>
+
+                    <div class="flashcard-buttons">
+                        <button class="btn btn-outline" onclick="skipQuestion()">Passer</button>
+                        <button class="btn btn-primary" onclick="validateAnswer()">Valider</button>
+                    </div>
+
+                    <div class="quiz-feedback" id="quizFeedback" style="display: none;"></div>
+                </div>
+            </div>
+
+            <div id="quizResults" class="card" style="display: none;">
+                <div class="results-screen">
+                    <h2>Quiz terminé !</h2>
+                    <div class="results-score" id="finalScore">85%</div>
+                    <div class="results-details">
+                        <div class="result-stat">
+                            <div class="result-stat-value" id="correctCount" style="color: var(--success);">17</div>
+                            <div class="result-stat-label">Correct</div>
+                        </div>
+                        <div class="result-stat">
+                            <div class="result-stat-value" id="incorrectCount" style="color: var(--danger);">3</div>
+                            <div class="result-stat-label">Incorrect</div>
+                        </div>
+                        <div class="result-stat">
+                            <div class="result-stat-value" id="xpEarned" style="color: var(--primary);">+170</div>
+                            <div class="result-stat-label">XP gagnés</div>
+                        </div>
+                    </div>
+                    <div class="flashcard-buttons">
+                        <button class="btn btn-primary" onclick="resetQuiz()">Nouveau Quiz</button>
+                        <button class="btn btn-outline" onclick="showSection('dashboard')">Retour</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Library Section -->
+        <section id="library" class="section">
+            <div class="card">
+                <h3 class="card-title">Filtrer par catégorie</h3>
+                <div class="category-chips" id="libraryCategories">
+                    <!-- Categories will be populated by JS -->
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">Tous les raccourcis</h3>
+                <div class="shortcuts-list" id="shortcutsList">
+                    <!-- Shortcuts will be populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Search Section -->
+        <section id="search" class="section">
+            <!-- Search by Action -->
+            <div class="card">
+                <h3 class="card-title">Trouver un raccourci</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Décrivez ce que vous voulez faire</p>
+                <div class="search-container">
+                    <input type="text" id="actionSearch" class="search-input" placeholder="Ex: supprimer caractères, copier, capture écran..." oninput="searchByAction()">
+                </div>
+                <div id="searchResults" class="shortcuts-list" style="margin-top: 1rem;"></div>
+            </div>
+
+            <!-- Windows to Mac Translator -->
+            <div class="card">
+                <h3 class="card-title">Traducteur Windows → Mac</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Entrez un raccourci Windows pour obtenir l'équivalent Mac</p>
+                <div class="translator-container">
+                    <div class="translator-input">
+                        <div class="translator-keys" id="windowsKeys">
+                            <span style="color: var(--text-secondary);">Cliquez sur les touches Windows...</span>
+                        </div>
+                        <div class="key-buttons">
+                            <button class="key-btn" onclick="addWindowsKey('Ctrl')">Ctrl</button>
+                            <button class="key-btn" onclick="addWindowsKey('Alt')">Alt</button>
+                            <button class="key-btn" onclick="addWindowsKey('Shift')">Shift</button>
+                            <button class="key-btn" onclick="addWindowsKey('Win')">Win</button>
+                            <button class="key-btn" onclick="addWindowsKey('Suppr')">Suppr</button>
+                            <button class="key-btn" onclick="addWindowsKey('Retour')">Retour</button>
+                            <input type="text" id="windowsKeyInput" class="key-input" placeholder="Autre touche" maxlength="3" onkeyup="addCustomWindowsKey(event)">
+                        </div>
+                        <div class="translator-actions">
+                            <button class="btn btn-outline" onclick="clearWindowsKeys()">Effacer</button>
+                            <button class="btn btn-primary" onclick="translateToMac()">Traduire</button>
+                        </div>
+                    </div>
+                    <div id="translationResult" class="translation-result" style="display: none;">
+                        <div class="translation-arrow">↓</div>
+                        <div class="translation-mac">
+                            <span class="translation-label">Équivalent Mac :</span>
+                            <div class="shortcut-display" id="macEquivalent"></div>
+                            <div id="macAction" style="margin-top: 0.5rem; font-weight: 600;"></div>
+                            <div id="macDescription" style="color: var(--text-secondary); font-size: 0.9rem;"></div>
+                        </div>
+                    </div>
+                    <div id="noTranslation" class="no-translation" style="display: none;">
+                        <p>Raccourci non trouvé dans la base.</p>
+                        <button class="btn btn-primary" onclick="showSuggestForm()" style="margin-top: 0.5rem;">Proposer ce raccourci</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suggest New Shortcut -->
+            <div class="card" id="suggestCard">
+                <h3 class="card-title">Proposer un raccourci</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Vous connaissez un raccourci qui manque ? Ajoutez-le !</p>
+                <div class="suggest-form">
+                    <div class="form-group">
+                        <label>Action (ce que fait le raccourci)</label>
+                        <input type="text" id="suggestAction" class="search-input" placeholder="Ex: Supprimer le mot suivant">
+                    </div>
+                    <div class="form-group">
+                        <label>Raccourci Mac</label>
+                        <div class="key-buttons">
+                            <button class="key-btn" onclick="addSuggestKey('⌘')">⌘</button>
+                            <button class="key-btn" onclick="addSuggestKey('⌥')">⌥</button>
+                            <button class="key-btn" onclick="addSuggestKey('⌃')">⌃</button>
+                            <button class="key-btn" onclick="addSuggestKey('⇧')">⇧</button>
+                            <button class="key-btn" onclick="addSuggestKey('⌫')">⌫</button>
+                            <button class="key-btn" onclick="addSuggestKey('⌦')">⌦</button>
+                            <button class="key-btn" onclick="addSuggestKey('Fn')">Fn</button>
+                            <input type="text" id="suggestKeyInput" class="key-input" placeholder="Autre" maxlength="3" onkeyup="addCustomSuggestKey(event)">
+                        </div>
+                        <div class="translator-keys" id="suggestKeys" style="margin-top: 0.5rem; min-height: 40px;">
+                            <span style="color: var(--text-secondary);">Cliquez sur les touches...</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Catégorie</label>
+                        <div class="category-chips" id="suggestCategories"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Description (optionnel)</label>
+                        <input type="text" id="suggestDescription" class="search-input" placeholder="Ex: Supprime le mot après le curseur">
+                    </div>
+                    <div class="form-group">
+                        <label>Raccourci Windows équivalent (optionnel)</label>
+                        <input type="text" id="suggestWindows" class="search-input" placeholder="Ex: Ctrl+Suppr">
+                    </div>
+                    <div class="translator-actions">
+                        <button class="btn btn-outline" onclick="clearSuggestForm()">Effacer</button>
+                        <button class="btn btn-success" onclick="submitSuggestion()">Ajouter le raccourci</button>
+                    </div>
+                </div>
+                <div id="suggestSuccess" class="quiz-feedback correct" style="display: none; margin-top: 1rem;">
+                    Raccourci ajouté avec succès !
+                </div>
+            </div>
+
+            <!-- User Added Shortcuts -->
+            <div class="card" id="userShortcutsCard" style="display: none;">
+                <h3 class="card-title">Mes raccourcis ajoutés</h3>
+                <div class="shortcuts-list" id="userShortcutsList"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Streak Popup -->
+    <div class="streak-popup" id="streakPopup">🔥 Streak x<span id="streakCount">5</span>!</div>
+
+    <script>
+        // Mac Shortcuts Database
+        const shortcuts = [
+            // Système - Essentiels
+            { id: 1, action: "Copier", keys: ["⌘", "C"], category: "Système", description: "Copie la sélection dans le presse-papiers" },
+            { id: 2, action: "Coller", keys: ["⌘", "V"], category: "Système", description: "Colle le contenu du presse-papiers" },
+            { id: 3, action: "Couper", keys: ["⌘", "X"], category: "Système", description: "Coupe la sélection" },
+            { id: 4, action: "Annuler", keys: ["⌘", "Z"], category: "Système", description: "Annule la dernière action" },
+            { id: 5, action: "Rétablir", keys: ["⌘", "⇧", "Z"], category: "Système", description: "Rétablit l'action annulée" },
+            { id: 6, action: "Tout sélectionner", keys: ["⌘", "A"], category: "Système", description: "Sélectionne tout le contenu" },
+            { id: 7, action: "Enregistrer", keys: ["⌘", "S"], category: "Système", description: "Enregistre le document actuel" },
+            { id: 8, action: "Rechercher", keys: ["⌘", "F"], category: "Système", description: "Ouvre la recherche" },
+            { id: 9, action: "Nouveau", keys: ["⌘", "N"], category: "Système", description: "Crée un nouveau document/fenêtre" },
+            { id: 10, action: "Ouvrir", keys: ["⌘", "O"], category: "Système", description: "Ouvre un fichier" },
+            { id: 11, action: "Fermer la fenêtre", keys: ["⌘", "W"], category: "Système", description: "Ferme la fenêtre active" },
+            { id: 12, action: "Quitter l'application", keys: ["⌘", "Q"], category: "Système", description: "Quitte l'application active" },
+            { id: 13, action: "Imprimer", keys: ["⌘", "P"], category: "Système", description: "Ouvre le dialogue d'impression" },
+            { id: 14, action: "Masquer l'application", keys: ["⌘", "H"], category: "Système", description: "Masque l'application active" },
+            { id: 15, action: "Minimiser", keys: ["⌘", "M"], category: "Système", description: "Minimise la fenêtre dans le Dock" },
+
+            // Finder
+            { id: 16, action: "Nouveau dossier", keys: ["⌘", "⇧", "N"], category: "Finder", description: "Crée un nouveau dossier" },
+            { id: 17, action: "Aller au dossier", keys: ["⌘", "⇧", "G"], category: "Finder", description: "Ouvre le dialogue 'Aller au dossier'" },
+            { id: 18, action: "Ouvrir Documents", keys: ["⌘", "⇧", "O"], category: "Finder", description: "Ouvre le dossier Documents" },
+            { id: 19, action: "Ouvrir Téléchargements", keys: ["⌥", "⌘", "L"], category: "Finder", description: "Ouvre le dossier Téléchargements" },
+            { id: 20, action: "Ouvrir Bureau", keys: ["⌘", "⇧", "D"], category: "Finder", description: "Ouvre le dossier Bureau" },
+            { id: 21, action: "Ouvrir AirDrop", keys: ["⌘", "⇧", "R"], category: "Finder", description: "Ouvre AirDrop" },
+            { id: 22, action: "Afficher/Masquer fichiers cachés", keys: ["⌘", "⇧", "."], category: "Finder", description: "Affiche ou masque les fichiers cachés" },
+            { id: 23, action: "Lire les informations", keys: ["⌘", "I"], category: "Finder", description: "Affiche les informations du fichier" },
+            { id: 24, action: "Créer un alias", keys: ["⌘", "L"], category: "Finder", description: "Crée un alias du fichier sélectionné" },
+            { id: 25, action: "Mettre à la corbeille", keys: ["⌘", "⌫"], category: "Finder", description: "Déplace la sélection vers la corbeille" },
+            { id: 26, action: "Vider la corbeille", keys: ["⌘", "⇧", "⌫"], category: "Finder", description: "Vide la corbeille" },
+            { id: 27, action: "Aperçu rapide", keys: ["Espace"], category: "Finder", description: "Affiche un aperçu du fichier" },
+            { id: 28, action: "Dupliquer", keys: ["⌘", "D"], category: "Finder", description: "Duplique le fichier sélectionné" },
+
+            // Captures d'écran
+            { id: 29, action: "Capture écran complet", keys: ["⌘", "⇧", "3"], category: "Captures", description: "Capture tout l'écran" },
+            { id: 30, action: "Capture zone sélectionnée", keys: ["⌘", "⇧", "4"], category: "Captures", description: "Capture une zone sélectionnée" },
+            { id: 31, action: "Capture fenêtre", keys: ["⌘", "⇧", "4", "Espace"], category: "Captures", description: "Capture une fenêtre spécifique" },
+            { id: 32, action: "Outils de capture", keys: ["⌘", "⇧", "5"], category: "Captures", description: "Ouvre les outils de capture" },
+            { id: 33, action: "Capture dans presse-papiers", keys: ["⌘", "⌃", "⇧", "4"], category: "Captures", description: "Capture une zone dans le presse-papiers" },
+
+            // Navigation
+            { id: 34, action: "Spotlight", keys: ["⌘", "Espace"], category: "Navigation", description: "Ouvre Spotlight" },
+            { id: 35, action: "Basculer entre apps", keys: ["⌘", "Tab"], category: "Navigation", description: "Passe à l'application suivante" },
+            { id: 36, action: "Mission Control", keys: ["⌃", "↑"], category: "Navigation", description: "Affiche Mission Control" },
+            { id: 37, action: "Afficher le bureau", keys: ["F11"], category: "Navigation", description: "Affiche le bureau" },
+            { id: 38, action: "Bureau suivant", keys: ["⌃", "→"], category: "Navigation", description: "Passe au bureau virtuel suivant" },
+            { id: 39, action: "Bureau précédent", keys: ["⌃", "←"], category: "Navigation", description: "Passe au bureau virtuel précédent" },
+            { id: 40, action: "Forcer à quitter", keys: ["⌘", "⌥", "Esc"], category: "Navigation", description: "Ouvre le dialogue Forcer à quitter" },
+            { id: 41, action: "Verrouiller l'écran", keys: ["⌘", "⌃", "Q"], category: "Navigation", description: "Verrouille l'écran" },
+            { id: 42, action: "Déconnexion", keys: ["⌘", "⇧", "Q"], category: "Navigation", description: "Déconnecte l'utilisateur" },
+
+            // Texte
+            { id: 43, action: "Gras", keys: ["⌘", "B"], category: "Texte", description: "Met le texte en gras" },
+            { id: 44, action: "Italique", keys: ["⌘", "I"], category: "Texte", description: "Met le texte en italique" },
+            { id: 45, action: "Souligné", keys: ["⌘", "U"], category: "Texte", description: "Souligne le texte" },
+            { id: 46, action: "Début de ligne", keys: ["⌘", "←"], category: "Texte", description: "Déplace le curseur au début de la ligne" },
+            { id: 47, action: "Fin de ligne", keys: ["⌘", "→"], category: "Texte", description: "Déplace le curseur à la fin de la ligne" },
+            { id: 48, action: "Début du document", keys: ["⌘", "↑"], category: "Texte", description: "Déplace le curseur au début du document" },
+            { id: 49, action: "Fin du document", keys: ["⌘", "↓"], category: "Texte", description: "Déplace le curseur à la fin du document" },
+            { id: 50, action: "Supprimer mot précédent", keys: ["⌥", "⌫"], category: "Texte", description: "Supprime le mot précédent" },
+            { id: 51, action: "Sélectionner jusqu'à début ligne", keys: ["⌘", "⇧", "←"], category: "Texte", description: "Sélectionne du curseur au début de la ligne" },
+            { id: 52, action: "Sélectionner jusqu'à fin ligne", keys: ["⌘", "⇧", "→"], category: "Texte", description: "Sélectionne du curseur à la fin de la ligne" },
+
+            // Fenêtres
+            { id: 53, action: "Plein écran", keys: ["⌃", "⌘", "F"], category: "Fenêtres", description: "Active le mode plein écran" },
+            { id: 54, action: "Nouvelle fenêtre", keys: ["⌘", "N"], category: "Fenêtres", description: "Ouvre une nouvelle fenêtre" },
+            { id: 55, action: "Fermer l'onglet", keys: ["⌘", "W"], category: "Fenêtres", description: "Ferme l'onglet actif" },
+            { id: 56, action: "Nouvel onglet", keys: ["⌘", "T"], category: "Fenêtres", description: "Ouvre un nouvel onglet" },
+            { id: 57, action: "Onglet suivant", keys: ["⌃", "Tab"], category: "Fenêtres", description: "Passe à l'onglet suivant" },
+            { id: 58, action: "Onglet précédent", keys: ["⌃", "⇧", "Tab"], category: "Fenêtres", description: "Passe à l'onglet précédent" },
+            { id: 59, action: "Masquer les autres", keys: ["⌘", "⌥", "H"], category: "Fenêtres", description: "Masque toutes les autres applications" },
+            { id: 60, action: "Afficher toutes les fenêtres", keys: ["⌃", "↓"], category: "Fenêtres", description: "Affiche toutes les fenêtres de l'app" },
+
+            // Safari/Navigateur
+            { id: 61, action: "Actualiser la page", keys: ["⌘", "R"], category: "Navigateur", description: "Actualise la page web" },
+            { id: 62, action: "Page précédente", keys: ["⌘", "["], category: "Navigateur", description: "Retourne à la page précédente" },
+            { id: 63, action: "Page suivante", keys: ["⌘", "]"], category: "Navigateur", description: "Avance à la page suivante" },
+            { id: 64, action: "Ouvrir le lien dans nouvel onglet", keys: ["⌘", "Clic"], category: "Navigateur", description: "Ouvre un lien dans un nouvel onglet" },
+            { id: 65, action: "Zoomer", keys: ["⌘", "+"], category: "Navigateur", description: "Augmente le zoom de la page" },
+            { id: 66, action: "Dézoomer", keys: ["⌘", "-"], category: "Navigateur", description: "Diminue le zoom de la page" },
+            { id: 67, action: "Zoom par défaut", keys: ["⌘", "0"], category: "Navigateur", description: "Remet le zoom à 100%" },
+            { id: 68, action: "Rouvrir onglet fermé", keys: ["⌘", "⇧", "T"], category: "Navigateur", description: "Rouvre le dernier onglet fermé" },
+            { id: 69, action: "Favoris", keys: ["⌘", "D"], category: "Navigateur", description: "Ajoute la page aux favoris" },
+            { id: 70, action: "Téléchargements", keys: ["⌘", "⌥", "L"], category: "Navigateur", description: "Affiche les téléchargements" },
+
+            // Productivité
+            { id: 71, action: "Préférences app", keys: ["⌘", ","], category: "Productivité", description: "Ouvre les préférences de l'app" },
+            { id: 72, action: "Emoji et symboles", keys: ["⌃", "⌘", "Espace"], category: "Productivité", description: "Ouvre le sélecteur d'emoji" },
+            { id: 73, action: "Dictée vocale", keys: ["Fn", "Fn"], category: "Productivité", description: "Active la dictée vocale" },
+            { id: 74, action: "Ne pas déranger", keys: ["⌥", "Clic Notifications"], category: "Productivité", description: "Active Ne pas déranger" },
+            { id: 75, action: "Rechercher définition", keys: ["⌃", "⌘", "D"], category: "Productivité", description: "Affiche la définition du mot" },
+        ];
+
+        // Key mapping for keyboard detection
+        const keyMap = {
+            'Meta': '⌘',
+            'Control': '⌃',
+            'Alt': '⌥',
+            'Shift': '⇧',
+            'Backspace': '⌫',
+            'Delete': '⌦',
+            'Escape': 'Esc',
+            'ArrowUp': '↑',
+            'ArrowDown': '↓',
+            'ArrowLeft': '←',
+            'ArrowRight': '→',
+            ' ': 'Espace',
+            'Tab': 'Tab',
+            'Enter': '↵'
+        };
+
+        // State
+        let state = {
+            xp: 0,
+            level: 1,
+            streak: 0,
+            maxStreak: 0,
+            masteredShortcuts: new Set(),
+            shortcutProgress: {}, // { id: { level: 0-3, nextReview: Date } }
+            selectedCategories: [],
+            currentCards: [],
+            currentCardIndex: 0,
+            quizQuestions: [],
+            quizIndex: 0,
+            quizScore: 0,
+            pressedKeys: [],
+            badges: {
+                'first_steps': { name: 'Premiers pas', emoji: '🎯', desc: '10 raccourcis appris', unlocked: false },
+                'quick_learner': { name: 'Apprenti rapide', emoji: '⚡', desc: '5 streak', unlocked: false },
+                'dedicated': { name: 'Dévoué', emoji: '💪', desc: 'Niveau 5', unlocked: false },
+                'master': { name: 'Maître', emoji: '🏆', desc: '50% maîtrisés', unlocked: false },
+                'expert': { name: 'Expert', emoji: '👑', desc: 'Tous maîtrisés', unlocked: false },
+                'streak_king': { name: 'Roi du Streak', emoji: '🔥', desc: '10 streak', unlocked: false },
+                'level_10': { name: 'Niveau 10', emoji: '⭐', desc: 'Atteindre niveau 10', unlocked: false },
+                'perfect_quiz': { name: 'Quiz Parfait', emoji: '💯', desc: '100% sur un quiz', unlocked: false },
+            }
+        };
+
+        // Load state from localStorage
+        function loadState() {
+            const saved = localStorage.getItem('macShortcutsState');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                state = {
+                    ...state,
+                    ...parsed,
+                    masteredShortcuts: new Set(parsed.masteredShortcuts || []),
+                };
+            }
+            updateUI();
+        }
+
+        // Save state to localStorage
+        function saveState() {
+            const toSave = {
+                ...state,
+                masteredShortcuts: Array.from(state.masteredShortcuts)
+            };
+            localStorage.setItem('macShortcutsState', JSON.stringify(toSave));
+        }
+
+        // Initialize categories
+        function getCategories() {
+            return [...new Set(shortcuts.map(s => s.category))];
+        }
+
+        // XP and Level System
+        function addXP(amount) {
+            state.xp += amount;
+            const xpForLevel = level => level * 100;
+
+            while (state.xp >= xpForLevel(state.level)) {
+                state.xp -= xpForLevel(state.level);
+                state.level++;
+                showNotification(`🎉 Niveau ${state.level} atteint!`);
+                checkBadges();
+            }
+
+            showXPGain(amount);
+            saveState();
+            updateUI();
+        }
+
+        function showXPGain(amount) {
+            const xpEl = document.createElement('div');
+            xpEl.className = 'xp-gain';
+            xpEl.textContent = `+${amount} XP`;
+            xpEl.style.left = Math.random() * 80 + 10 + '%';
+            xpEl.style.top = '50%';
+            document.body.appendChild(xpEl);
+            setTimeout(() => xpEl.remove(), 1000);
+        }
+
+        function showNotification(message) {
+            // Simple notification
+            const popup = document.getElementById('streakPopup');
+            popup.innerHTML = message;
+            popup.classList.add('show');
+            setTimeout(() => popup.classList.remove('show'), 2000);
+        }
+
+        // Badge System
+        function checkBadges() {
+            const mastered = state.masteredShortcuts.size;
+            const total = shortcuts.length;
+
+            if (mastered >= 10 && !state.badges.first_steps.unlocked) {
+                state.badges.first_steps.unlocked = true;
+                showNotification('🎯 Badge débloqué: Premiers pas!');
+            }
+            if (state.streak >= 5 && !state.badges.quick_learner.unlocked) {
+                state.badges.quick_learner.unlocked = true;
+                showNotification('⚡ Badge débloqué: Apprenti rapide!');
+            }
+            if (state.level >= 5 && !state.badges.dedicated.unlocked) {
+                state.badges.dedicated.unlocked = true;
+                showNotification('💪 Badge débloqué: Dévoué!');
+            }
+            if (mastered >= total / 2 && !state.badges.master.unlocked) {
+                state.badges.master.unlocked = true;
+                showNotification('🏆 Badge débloqué: Maître!');
+            }
+            if (mastered >= total && !state.badges.expert.unlocked) {
+                state.badges.expert.unlocked = true;
+                showNotification('👑 Badge débloqué: Expert!');
+            }
+            if (state.streak >= 10 && !state.badges.streak_king.unlocked) {
+                state.badges.streak_king.unlocked = true;
+                showNotification('🔥 Badge débloqué: Roi du Streak!');
+            }
+            if (state.level >= 10 && !state.badges.level_10.unlocked) {
+                state.badges.level_10.unlocked = true;
+                showNotification('⭐ Badge débloqué: Niveau 10!');
+            }
+
+            saveState();
+            updateBadges();
+        }
+
+        // Update UI
+        function updateUI() {
+            document.getElementById('totalXP').textContent = state.xp + state.level * 100;
+            document.getElementById('currentLevel').textContent = state.level;
+            document.getElementById('currentStreak').textContent = state.streak;
+            document.getElementById('masteredCount').textContent = state.masteredShortcuts.size;
+
+            // Dashboard
+            const mastered = state.masteredShortcuts.size;
+            const total = shortcuts.length;
+            const percent = Math.round((mastered / total) * 100);
+
+            document.getElementById('progressPercent').textContent = percent + '%';
+            document.getElementById('masteredText').textContent = mastered;
+            document.getElementById('totalShortcuts').textContent = total;
+
+            const circumference = 2 * Math.PI * 50;
+            const offset = circumference - (percent / 100) * circumference;
+            document.getElementById('progressCircle').style.strokeDashoffset = offset;
+
+            document.getElementById('levelDisplay').textContent = state.level;
+            const xpForNext = state.level * 100;
+            const levelPercent = (state.xp / xpForNext) * 100;
+            document.getElementById('levelProgress').style.width = levelPercent + '%';
+            document.getElementById('xpToNext').textContent = xpForNext - state.xp;
+
+            updateBadges();
+            updateCategories();
+            updateShortcutsList();
+        }
+
+        function updateBadges() {
+            const container = document.getElementById('badgesContainer');
+            container.innerHTML = '';
+            Object.entries(state.badges).forEach(([key, badge]) => {
+                const el = document.createElement('div');
+                el.className = 'badge' + (badge.unlocked ? ' unlocked' : '');
+                el.textContent = badge.emoji;
+                el.title = badge.name + ': ' + badge.desc;
+                container.appendChild(el);
+            });
+        }
+
+        function updateCategories() {
+            const categories = getCategories();
+            ['flashcardCategories', 'quizCategories', 'libraryCategories'].forEach(containerId => {
+                const container = document.getElementById(containerId);
+                container.innerHTML = '';
+
+                const allChip = document.createElement('div');
+                allChip.className = 'chip' + (state.selectedCategories.length === 0 ? ' selected' : '');
+                allChip.textContent = 'Toutes';
+                allChip.onclick = () => {
+                    state.selectedCategories = [];
+                    updateCategories();
+                    updateShortcutsList();
+                };
+                container.appendChild(allChip);
+
+                categories.forEach(cat => {
+                    const chip = document.createElement('div');
+                    chip.className = 'chip' + (state.selectedCategories.includes(cat) ? ' selected' : '');
+                    chip.textContent = cat;
+                    chip.onclick = () => toggleCategory(cat);
+                    container.appendChild(chip);
+                });
+            });
+        }
+
+        function toggleCategory(category) {
+            const idx = state.selectedCategories.indexOf(category);
+            if (idx > -1) {
+                state.selectedCategories.splice(idx, 1);
+            } else {
+                state.selectedCategories.push(category);
+            }
+            updateCategories();
+            updateShortcutsList();
+        }
+
+        function getFilteredShortcuts() {
+            if (state.selectedCategories.length === 0) return shortcuts;
+            return shortcuts.filter(s => state.selectedCategories.includes(s.category));
+        }
+
+        function updateShortcutsList() {
+            const list = document.getElementById('shortcutsList');
+            const filtered = getFilteredShortcuts();
+
+            list.innerHTML = filtered.map(s => {
+                const progress = state.shortcutProgress[s.id] || { level: 0 };
+                return `
+                    <div class="shortcut-item">
+                        <div class="shortcut-info">
+                            <div class="shortcut-name">${s.action}</div>
+                            <div class="shortcut-desc">${s.description}</div>
+                        </div>
+                        <div class="shortcut-keys">
+                            ${s.keys.map(k => `<span class="key">${k}</span>`).join('')}
+                            <div class="mastery-indicator mastery-${progress.level}"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
+        }
+
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => showSection(tab.dataset.section));
+        });
+
+        // Flashcards
+        function startFlashcards(mode) {
+            const filtered = getFilteredShortcuts();
+
+            if (mode === 'new') {
+                state.currentCards = filtered.filter(s => !state.shortcutProgress[s.id] || state.shortcutProgress[s.id].level === 0);
+            } else if (mode === 'review') {
+                const now = Date.now();
+                state.currentCards = filtered.filter(s => {
+                    const progress = state.shortcutProgress[s.id];
+                    return progress && progress.nextReview && progress.nextReview <= now;
+                });
+            } else {
+                state.currentCards = [...filtered];
+            }
+
+            if (state.currentCards.length === 0) {
+                showNotification('Aucune carte disponible!');
+                return;
+            }
+
+            // Shuffle
+            state.currentCards.sort(() => Math.random() - 0.5);
+            state.currentCards = state.currentCards.slice(0, 20); // Max 20 cards
+            state.currentCardIndex = 0;
+
+            document.getElementById('flashcardStart').style.display = 'none';
+            document.getElementById('flashcardArea').style.display = 'block';
+            showCurrentCard();
+        }
+
+        function showCurrentCard() {
+            const card = state.currentCards[state.currentCardIndex];
+            document.getElementById('fcCategory').textContent = card.category;
+            document.getElementById('fcAction').textContent = card.action;
+            document.getElementById('fcKeys').innerHTML = card.keys.map(k => `<span class="key">${k}</span>`).join('');
+            document.getElementById('fcDescription').textContent = card.description;
+            document.getElementById('fcProgress').textContent = `${state.currentCardIndex + 1} / ${state.currentCards.length}`;
+
+            document.getElementById('flashcard').classList.remove('flipped');
+            document.getElementById('fcButtons').style.visibility = 'hidden';
+        }
+
+        function flipCard() {
+            document.getElementById('flashcard').classList.toggle('flipped');
+            document.getElementById('fcButtons').style.visibility = 'visible';
+        }
+
+        function rateCard(rating) {
+            const card = state.currentCards[state.currentCardIndex];
+
+            if (!state.shortcutProgress[card.id]) {
+                state.shortcutProgress[card.id] = { level: 0, nextReview: 0 };
+            }
+
+            const progress = state.shortcutProgress[card.id];
+
+            // Spaced repetition logic
+            if (rating === 3) { // Easy
+                progress.level = Math.min(3, progress.level + 1);
+                progress.nextReview = Date.now() + (progress.level * 24 * 60 * 60 * 1000); // Days
+                state.streak++;
+                addXP(15);
+            } else if (rating === 2) { // Medium
+                progress.nextReview = Date.now() + (12 * 60 * 60 * 1000); // 12 hours
+                state.streak++;
+                addXP(10);
+            } else { // Hard
+                progress.level = Math.max(0, progress.level - 1);
+                progress.nextReview = Date.now() + (1 * 60 * 60 * 1000); // 1 hour
+                state.streak = 0;
+                addXP(5);
+            }
+
+            if (progress.level >= 3) {
+                state.masteredShortcuts.add(card.id);
+            }
+
+            if (state.streak > 0 && state.streak % 5 === 0) {
+                document.getElementById('streakCount').textContent = state.streak;
+                document.getElementById('streakPopup').classList.add('show');
+                setTimeout(() => document.getElementById('streakPopup').classList.remove('show'), 2000);
+            }
+
+            checkBadges();
+            saveState();
+
+            state.currentCardIndex++;
+            if (state.currentCardIndex >= state.currentCards.length) {
+                showNotification('🎉 Session terminée!');
+                document.getElementById('flashcardStart').style.display = 'block';
+                document.getElementById('flashcardArea').style.display = 'none';
+                updateUI();
+            } else {
+                showCurrentCard();
+            }
+        }
+
+        // Quiz
+        function startQuiz(numQuestions) {
+            const filtered = getFilteredShortcuts();
+            state.quizQuestions = [...filtered].sort(() => Math.random() - 0.5).slice(0, numQuestions);
+            state.quizIndex = 0;
+            state.quizScore = 0;
+            state.pressedKeys = [];
+
+            document.getElementById('quizStart').style.display = 'none';
+            document.getElementById('quizArea').style.display = 'block';
+            document.getElementById('quizResults').style.display = 'none';
+            document.getElementById('quizTotal').textContent = numQuestions;
+
+            showCurrentQuestion();
+            document.addEventListener('keydown', handleQuizKeydown);
+            document.addEventListener('keyup', handleQuizKeyup);
+        }
+
+        function showCurrentQuestion() {
+            const q = state.quizQuestions[state.quizIndex];
+            document.getElementById('quizCurrent').textContent = state.quizIndex + 1;
+            document.getElementById('quizPrompt').textContent = q.action;
+            document.getElementById('quizScore').textContent = state.quizScore;
+            document.getElementById('quizProgressBar').style.width = ((state.quizIndex + 1) / state.quizQuestions.length * 100) + '%';
+            document.getElementById('quizFeedback').style.display = 'none';
+            state.pressedKeys = [];
+            updateKeyboardInput();
+        }
+
+        function handleQuizKeydown(e) {
+            e.preventDefault();
+            const key = keyMap[e.key] || e.key.toUpperCase();
+            if (!state.pressedKeys.includes(key)) {
+                state.pressedKeys.push(key);
+                updateKeyboardInput();
+            }
+        }
+
+        function handleQuizKeyup(e) {
+            // Keep keys displayed until validate/skip
+        }
+
+        function updateKeyboardInput() {
+            const container = document.getElementById('keyboardInput');
+            if (state.pressedKeys.length === 0) {
+                container.innerHTML = '<span style="color: var(--text-secondary);">Appuyez sur les touches...</span>';
+            } else {
+                container.innerHTML = state.pressedKeys.map(k => `<span class="key">${k}</span>`).join('');
+            }
+        }
+
+        function validateAnswer() {
+            const q = state.quizQuestions[state.quizIndex];
+            const expectedKeys = q.keys.map(k => k.toUpperCase());
+            const pressedKeys = state.pressedKeys.map(k => k.toUpperCase());
+
+            // Check if all expected keys are pressed (order doesn't matter)
+            const isCorrect = expectedKeys.length === pressedKeys.length &&
+                              expectedKeys.every(k => pressedKeys.includes(k));
+
+            const feedback = document.getElementById('quizFeedback');
+
+            if (isCorrect) {
+                state.quizScore++;
+                state.streak++;
+                addXP(10);
+                feedback.className = 'quiz-feedback correct';
+                feedback.innerHTML = '✓ Correct! +10 XP';
+            } else {
+                state.streak = 0;
+                feedback.className = 'quiz-feedback incorrect';
+                feedback.innerHTML = `✗ La réponse était: ${q.keys.map(k => `<span class="key" style="display:inline-block;padding:0.25rem 0.5rem;background:var(--bg);border-radius:4px;margin:0 2px;">${k}</span>`).join(' ')}`;
+            }
+
+            feedback.style.display = 'block';
+            checkBadges();
+
+            setTimeout(() => {
+                state.quizIndex++;
+                if (state.quizIndex >= state.quizQuestions.length) {
+                    endQuiz();
+                } else {
+                    showCurrentQuestion();
+                }
+            }, 1500);
+        }
+
+        function skipQuestion() {
+            state.streak = 0;
+            state.quizIndex++;
+            if (state.quizIndex >= state.quizQuestions.length) {
+                endQuiz();
+            } else {
+                showCurrentQuestion();
+            }
+        }
+
+        function endQuiz() {
+            document.removeEventListener('keydown', handleQuizKeydown);
+            document.removeEventListener('keyup', handleQuizKeyup);
+
+            const total = state.quizQuestions.length;
+            const percent = Math.round((state.quizScore / total) * 100);
+            const xpEarned = state.quizScore * 10;
+
+            document.getElementById('quizArea').style.display = 'none';
+            document.getElementById('quizResults').style.display = 'block';
+
+            document.getElementById('finalScore').textContent = percent + '%';
+            document.getElementById('correctCount').textContent = state.quizScore;
+            document.getElementById('incorrectCount').textContent = total - state.quizScore;
+            document.getElementById('xpEarned').textContent = '+' + xpEarned;
+
+            if (percent === 100 && !state.badges.perfect_quiz.unlocked) {
+                state.badges.perfect_quiz.unlocked = true;
+                showNotification('💯 Badge débloqué: Quiz Parfait!');
+            }
+
+            saveState();
+            updateUI();
+        }
+
+        function resetQuiz() {
+            document.getElementById('quizStart').style.display = 'block';
+            document.getElementById('quizArea').style.display = 'none';
+            document.getElementById('quizResults').style.display = 'none';
+        }
+
+        // Quick actions
+        function startQuickPractice() {
+            showSection('flashcards');
+            setTimeout(() => startFlashcards('review'), 100);
+        }
+
+        function startQuickQuiz() {
+            showSection('quiz');
+            setTimeout(() => startQuiz(10), 100);
+        }
+
+        // Windows to Mac key mapping
+        const windowsToMac = {
+            'Ctrl': '⌘',
+            'Alt': '⌥',
+            'Shift': '⇧',
+            'Win': '⌃',
+            'Suppr': '⌦',
+            'Retour': '⌫',
+            'Delete': '⌦',
+            'Backspace': '⌫',
+            'Enter': '↵',
+            'Tab': 'Tab',
+            'Esc': 'Esc',
+            'Escape': 'Esc',
+            'Space': 'Espace',
+            'Up': '↑',
+            'Down': '↓',
+            'Left': '←',
+            'Right': '→'
+        };
+
+        // State for search section
+        let windowsKeysState = [];
+        let suggestKeysState = [];
+        let selectedSuggestCategory = 'Système';
+        let userShortcuts = [];
+
+        // Load user shortcuts from localStorage
+        function loadUserShortcuts() {
+            const saved = localStorage.getItem('userShortcuts');
+            if (saved) {
+                userShortcuts = JSON.parse(saved);
+                // Add user shortcuts to main shortcuts array
+                userShortcuts.forEach(s => {
+                    if (!shortcuts.find(existing => existing.id === s.id)) {
+                        shortcuts.push(s);
+                    }
+                });
+                updateUserShortcutsList();
+            }
+        }
+
+        // Save user shortcuts to localStorage
+        function saveUserShortcuts() {
+            localStorage.setItem('userShortcuts', JSON.stringify(userShortcuts));
+        }
+
+        // Search by action/description
+        function searchByAction() {
+            const query = document.getElementById('actionSearch').value.toLowerCase().trim();
+            const resultsContainer = document.getElementById('searchResults');
+
+            if (query.length < 2) {
+                resultsContainer.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Tapez au moins 2 caractères...</p>';
+                return;
+            }
+
+            // Search in action, description, and keywords
+            const results = shortcuts.filter(s => {
+                const searchText = `${s.action} ${s.description} ${s.keys.join(' ')}`.toLowerCase();
+                return searchText.includes(query);
+            });
+
+            if (results.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div style="text-align: center; padding: 2rem;">
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">Aucun raccourci trouvé pour "${query}"</p>
+                        <button class="btn btn-primary" onclick="scrollToSuggest()">Proposer ce raccourci</button>
+                    </div>
+                `;
+                return;
+            }
+
+            resultsContainer.innerHTML = results.map(s => {
+                const highlightedAction = highlightText(s.action, query);
+                const highlightedDesc = highlightText(s.description, query);
+                return `
+                    <div class="shortcut-item">
+                        <div class="shortcut-info">
+                            <div class="shortcut-name">${highlightedAction}</div>
+                            <div class="shortcut-desc">${highlightedDesc}</div>
+                        </div>
+                        <div class="shortcut-keys">
+                            ${s.keys.map(k => `<span class="key">${k}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function highlightText(text, query) {
+            const regex = new RegExp(`(${query})`, 'gi');
+            return text.replace(regex, '<span class="search-highlight">$1</span>');
+        }
+
+        function scrollToSuggest() {
+            document.getElementById('suggestCard').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Windows Keys Management
+        function addWindowsKey(key) {
+            if (!windowsKeysState.includes(key)) {
+                windowsKeysState.push(key);
+                updateWindowsKeysDisplay();
+            }
+        }
+
+        function addCustomWindowsKey(event) {
+            if (event.key === 'Enter') {
+                const input = document.getElementById('windowsKeyInput');
+                const key = input.value.toUpperCase().trim();
+                if (key && !windowsKeysState.includes(key)) {
+                    windowsKeysState.push(key);
+                    updateWindowsKeysDisplay();
+                }
+                input.value = '';
+            }
+        }
+
+        function updateWindowsKeysDisplay() {
+            const container = document.getElementById('windowsKeys');
+            if (windowsKeysState.length === 0) {
+                container.innerHTML = '<span style="color: var(--text-secondary);">Cliquez sur les touches Windows...</span>';
+            } else {
+                container.innerHTML = windowsKeysState.map(k => `<span class="key">${k}</span>`).join('');
+            }
+        }
+
+        function clearWindowsKeys() {
+            windowsKeysState = [];
+            updateWindowsKeysDisplay();
+            document.getElementById('translationResult').style.display = 'none';
+            document.getElementById('noTranslation').style.display = 'none';
+        }
+
+        // Translate Windows shortcut to Mac
+        function translateToMac() {
+            if (windowsKeysState.length === 0) {
+                showNotification('Ajoutez des touches Windows d\'abord');
+                return;
+            }
+
+            // Convert Windows keys to Mac keys
+            const macKeys = windowsKeysState.map(k => windowsToMac[k] || k);
+
+            // Search for matching shortcut
+            const match = shortcuts.find(s => {
+                const sKeys = s.keys.map(k => k.toUpperCase());
+                const searchKeys = macKeys.map(k => k.toUpperCase());
+                return sKeys.length === searchKeys.length &&
+                       sKeys.every(k => searchKeys.includes(k));
+            });
+
+            if (match) {
+                document.getElementById('translationResult').style.display = 'block';
+                document.getElementById('noTranslation').style.display = 'none';
+                document.getElementById('macEquivalent').innerHTML = match.keys.map(k => `<span class="key">${k}</span>`).join('');
+                document.getElementById('macAction').textContent = match.action;
+                document.getElementById('macDescription').textContent = match.description;
+            } else {
+                // Show the converted keys even if no match
+                document.getElementById('translationResult').style.display = 'block';
+                document.getElementById('macEquivalent').innerHTML = macKeys.map(k => `<span class="key">${k}</span>`).join('');
+                document.getElementById('macAction').textContent = 'Raccourci converti';
+                document.getElementById('macDescription').textContent = 'Ce raccourci n\'est pas dans notre base, mais voici l\'équivalent Mac probable.';
+                document.getElementById('noTranslation').style.display = 'block';
+            }
+        }
+
+        // Suggest Keys Management
+        function addSuggestKey(key) {
+            if (!suggestKeysState.includes(key)) {
+                suggestKeysState.push(key);
+                updateSuggestKeysDisplay();
+            }
+        }
+
+        function addCustomSuggestKey(event) {
+            if (event.key === 'Enter') {
+                const input = document.getElementById('suggestKeyInput');
+                const key = input.value.toUpperCase().trim();
+                if (key && !suggestKeysState.includes(key)) {
+                    suggestKeysState.push(key);
+                    updateSuggestKeysDisplay();
+                }
+                input.value = '';
+            }
+        }
+
+        function updateSuggestKeysDisplay() {
+            const container = document.getElementById('suggestKeys');
+            if (suggestKeysState.length === 0) {
+                container.innerHTML = '<span style="color: var(--text-secondary);">Cliquez sur les touches...</span>';
+            } else {
+                container.innerHTML = suggestKeysState.map(k => `<span class="key">${k}</span>`).join('');
+            }
+        }
+
+        function clearSuggestForm() {
+            document.getElementById('suggestAction').value = '';
+            document.getElementById('suggestDescription').value = '';
+            document.getElementById('suggestWindows').value = '';
+            suggestKeysState = [];
+            updateSuggestKeysDisplay();
+            document.getElementById('suggestSuccess').style.display = 'none';
+        }
+
+        // Initialize suggest categories
+        function initSuggestCategories() {
+            const container = document.getElementById('suggestCategories');
+            const categories = getCategories();
+            container.innerHTML = '';
+
+            categories.forEach(cat => {
+                const chip = document.createElement('div');
+                chip.className = 'chip' + (selectedSuggestCategory === cat ? ' selected' : '');
+                chip.textContent = cat;
+                chip.onclick = () => {
+                    selectedSuggestCategory = cat;
+                    initSuggestCategories();
+                };
+                container.appendChild(chip);
+            });
+
+            // Add "Autre" option
+            const otherChip = document.createElement('div');
+            otherChip.className = 'chip' + (selectedSuggestCategory === 'Personnalisé' ? ' selected' : '');
+            otherChip.textContent = 'Personnalisé';
+            otherChip.onclick = () => {
+                selectedSuggestCategory = 'Personnalisé';
+                initSuggestCategories();
+            };
+            container.appendChild(otherChip);
+        }
+
+        // Submit suggestion
+        function submitSuggestion() {
+            const action = document.getElementById('suggestAction').value.trim();
+            const description = document.getElementById('suggestDescription').value.trim();
+            const windowsEquiv = document.getElementById('suggestWindows').value.trim();
+
+            if (!action) {
+                showNotification('Entrez une action');
+                return;
+            }
+
+            if (suggestKeysState.length === 0) {
+                showNotification('Ajoutez les touches du raccourci');
+                return;
+            }
+
+            // Create new shortcut
+            const newShortcut = {
+                id: Date.now(), // Unique ID
+                action: action,
+                keys: [...suggestKeysState],
+                category: selectedSuggestCategory,
+                description: description || `Raccourci personnalisé: ${action}`,
+                windowsKeys: windowsEquiv,
+                userAdded: true
+            };
+
+            // Add to shortcuts and user shortcuts
+            shortcuts.push(newShortcut);
+            userShortcuts.push(newShortcut);
+            saveUserShortcuts();
+
+            // Show success
+            document.getElementById('suggestSuccess').style.display = 'block';
+            showNotification('Raccourci ajouté !');
+            addXP(25);
+
+            // Clear form after delay
+            setTimeout(() => {
+                clearSuggestForm();
+                updateUserShortcutsList();
+                updateShortcutsList();
+            }, 1500);
+        }
+
+        // Update user shortcuts list
+        function updateUserShortcutsList() {
+            const container = document.getElementById('userShortcutsList');
+            const card = document.getElementById('userShortcutsCard');
+
+            if (userShortcuts.length === 0) {
+                card.style.display = 'none';
+                return;
+            }
+
+            card.style.display = 'block';
+            container.innerHTML = userShortcuts.map(s => `
+                <div class="shortcut-item">
+                    <div class="shortcut-info">
+                        <div class="shortcut-name">${s.action}</div>
+                        <div class="shortcut-desc">${s.description}</div>
+                    </div>
+                    <div class="shortcut-keys">
+                        ${s.keys.map(k => `<span class="key">${k}</span>`).join('')}
+                        <button class="delete-shortcut" onclick="deleteUserShortcut(${s.id})">✕</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Delete user shortcut
+        function deleteUserShortcut(id) {
+            userShortcuts = userShortcuts.filter(s => s.id !== id);
+            // Also remove from main shortcuts array
+            const idx = shortcuts.findIndex(s => s.id === id);
+            if (idx > -1) {
+                shortcuts.splice(idx, 1);
+            }
+            saveUserShortcuts();
+            updateUserShortcutsList();
+            updateShortcutsList();
+            showNotification('Raccourci supprimé');
+        }
+
+        // Show suggest form (called from translator)
+        function showSuggestForm() {
+            // Pre-fill with Windows keys if available
+            if (windowsKeysState.length > 0) {
+                suggestKeysState = windowsKeysState.map(k => windowsToMac[k] || k);
+                updateSuggestKeysDisplay();
+                document.getElementById('suggestWindows').value = windowsKeysState.join('+');
+            }
+            document.getElementById('suggestCard').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('suggestAction').focus();
+        }
+
+        // ============================================
+        // SETTINGS & UX FEATURES
+        // ============================================
+
+        // Settings state
+        let settings = {
+            darkMode: false,
+            soundEnabled: true,
+            favoritesFirst: false,
+            difficultyFilter: ['easy', 'medium', 'hard'],
+            favorites: new Set()
+        };
+
+        // Audio context for sounds
+        let audioContext = null;
+
+        function initAudio() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        function playSound(type) {
+            if (!settings.soundEnabled || !audioContext) return;
+
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            if (type === 'success') {
+                oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(1100, audioContext.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } else if (type === 'error') {
+                oscillator.frequency.setValueAtTime(330, audioContext.currentTime);
+                oscillator.frequency.setValueAtTime(220, audioContext.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } else if (type === 'click') {
+                oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.1);
+            }
+        }
+
+        // Load settings from localStorage
+        function loadSettings() {
+            const saved = localStorage.getItem('macShortcutsSettings');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                settings = {
+                    ...settings,
+                    ...parsed,
+                    favorites: new Set(parsed.favorites || [])
+                };
+            }
+
+            // Apply settings
+            if (settings.darkMode) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.getElementById('darkModeToggle').classList.add('active');
+            }
+            if (settings.soundEnabled) {
+                document.getElementById('soundToggle').classList.add('active');
+            }
+            if (settings.favoritesFirst) {
+                document.getElementById('favoritesFirstToggle').classList.add('active');
+            }
+
+            // Update difficulty chips
+            document.querySelectorAll('.difficulty-chip').forEach(chip => {
+                const difficulty = chip.classList.contains('easy') ? 'easy' :
+                                   chip.classList.contains('medium') ? 'medium' : 'hard';
+                if (settings.difficultyFilter.includes(difficulty)) {
+                    chip.classList.add('selected');
+                } else {
+                    chip.classList.remove('selected');
+                }
+            });
+        }
+
+        // Save settings to localStorage
+        function saveSettings() {
+            const toSave = {
+                ...settings,
+                favorites: Array.from(settings.favorites)
+            };
+            localStorage.setItem('macShortcutsSettings', JSON.stringify(toSave));
+        }
+
+        // Toggle settings panel
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            const overlay = document.getElementById('settingsOverlay');
+            panel.classList.toggle('open');
+            overlay.classList.toggle('open');
+            playSound('click');
+        }
+
+        // Toggle dark mode
+        function toggleDarkMode() {
+            settings.darkMode = !settings.darkMode;
+            document.documentElement.setAttribute('data-theme', settings.darkMode ? 'dark' : 'light');
+            document.getElementById('darkModeToggle').classList.toggle('active');
+            saveSettings();
+            playSound('click');
+
+            // Update theme-color meta tag
+            document.querySelector('meta[name="theme-color"]').setAttribute('content',
+                settings.darkMode ? '#1C1C1E' : '#007AFF');
+        }
+
+        // Toggle sound
+        function toggleSound() {
+            settings.soundEnabled = !settings.soundEnabled;
+            document.getElementById('soundToggle').classList.toggle('active');
+            saveSettings();
+            if (settings.soundEnabled) {
+                if (!audioContext) initAudio();
+                playSound('click');
+            }
+        }
+
+        // Toggle favorites first
+        function toggleFavoritesFirst() {
+            settings.favoritesFirst = !settings.favoritesFirst;
+            document.getElementById('favoritesFirstToggle').classList.toggle('active');
+            saveSettings();
+            updateShortcutsList();
+            playSound('click');
+        }
+
+        // Toggle difficulty filter
+        function toggleDifficulty(difficulty) {
+            const idx = settings.difficultyFilter.indexOf(difficulty);
+            if (idx > -1) {
+                settings.difficultyFilter.splice(idx, 1);
+            } else {
+                settings.difficultyFilter.push(difficulty);
+            }
+
+            // Update UI
+            document.querySelectorAll('.difficulty-chip').forEach(chip => {
+                const d = chip.classList.contains('easy') ? 'easy' :
+                          chip.classList.contains('medium') ? 'medium' : 'hard';
+                if (settings.difficultyFilter.includes(d)) {
+                    chip.classList.add('selected');
+                } else {
+                    chip.classList.remove('selected');
+                }
+            });
+
+            saveSettings();
+            updateShortcutsList();
+            playSound('click');
+        }
+
+        // Toggle favorite
+        function toggleFavorite(id) {
+            if (settings.favorites.has(id)) {
+                settings.favorites.delete(id);
+            } else {
+                settings.favorites.add(id);
+                playSound('success');
+            }
+            saveSettings();
+            updateShortcutsList();
+        }
+
+        // Get difficulty level based on mastery
+        function getDifficulty(shortcutId) {
+            const progress = state.shortcutProgress[shortcutId];
+            if (!progress || progress.level === 0) return 'hard';
+            if (progress.level === 1) return 'medium';
+            return 'easy';
+        }
+
+        // Override updateShortcutsList to include favorites and difficulty
+        const originalUpdateShortcutsList = updateShortcutsList;
+        updateShortcutsList = function() {
+            const list = document.getElementById('shortcutsList');
+            let filtered = getFilteredShortcuts();
+
+            // Apply difficulty filter
+            filtered = filtered.filter(s => {
+                const difficulty = getDifficulty(s.id);
+                return settings.difficultyFilter.includes(difficulty);
+            });
+
+            // Sort favorites first if enabled
+            if (settings.favoritesFirst) {
+                filtered.sort((a, b) => {
+                    const aFav = settings.favorites.has(a.id) ? 0 : 1;
+                    const bFav = settings.favorites.has(b.id) ? 0 : 1;
+                    return aFav - bFav;
+                });
+            }
+
+            list.innerHTML = filtered.map(s => {
+                const progress = state.shortcutProgress[s.id] || { level: 0 };
+                const isFavorite = settings.favorites.has(s.id);
+                const difficulty = getDifficulty(s.id);
+                return `
+                    <div class="shortcut-item">
+                        <button class="favorite-btn ${isFavorite ? 'active' : ''}" onclick="toggleFavorite(${s.id})">★</button>
+                        <div class="shortcut-info">
+                            <div class="shortcut-name">${s.action}</div>
+                            <div class="shortcut-desc">${s.description}</div>
+                        </div>
+                        <div class="shortcut-keys">
+                            ${s.keys.map(k => `<span class="key">${k}</span>`).join('')}
+                            <div class="mastery-indicator mastery-${progress.level}"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        };
+
+        // Override addXP to play sound
+        const originalAddXP = addXP;
+        addXP = function(amount) {
+            playSound('success');
+            originalAddXP(amount);
+        };
+
+        // ============================================
+        // PWA INSTALLATION
+        // ============================================
+
+        let deferredPrompt = null;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+
+            // Show install banner after 5 seconds if not dismissed
+            const dismissed = localStorage.getItem('installBannerDismissed');
+            if (!dismissed) {
+                setTimeout(() => {
+                    document.getElementById('installBanner').classList.add('show');
+                }, 5000);
+            }
+        });
+
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        showNotification('App installée !');
+                        playSound('success');
+                    }
+                    deferredPrompt = null;
+                    document.getElementById('installBanner').classList.remove('show');
+                });
+            } else {
+                // Already installed or not supported
+                showNotification('Utilisez Safari > Partager > Sur l\'écran d\'accueil');
+            }
+        }
+
+        function dismissInstallBanner() {
+            document.getElementById('installBanner').classList.remove('show');
+            localStorage.setItem('installBannerDismissed', 'true');
+        }
+
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => {
+                        console.log('SW registered:', registration);
+                    })
+                    .catch(error => {
+                        console.log('SW registration failed:', error);
+                    });
+            });
+        }
+
+        // Initialize
+        loadState();
+        loadSettings();
+        loadUserShortcuts();
+        initSuggestCategories();
+
+        // Initialize audio on first user interaction
+        document.addEventListener('click', () => {
+            if (!audioContext && settings.soundEnabled) {
+                initAudio();
+            }
+        }, { once: true });
+    </script>
+</body>
+</html>
