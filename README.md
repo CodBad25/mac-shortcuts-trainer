@@ -57,6 +57,26 @@ Application web PWA interactive pour apprendre et maîtriser les raccourcis clav
 - Fonctionne hors ligne
 - Icône sur l'écran d'accueil
 
+### Défi quotidien
+- **5 raccourcis par jour** à maîtriser
+- Compte à rebours jusqu'à minuit
+- **+50 XP bonus** à la complétion
+- Renouvellement automatique chaque jour
+
+### Statistiques avancées
+- Sessions totales, score moyen, meilleur streak
+- Jours actifs de pratique
+- **Graphique de maîtrise par catégorie**
+
+### Clavier visuel interactif
+- Affichage des touches à presser en temps réel
+- Les touches attendues sont surlignées
+- Feedback visuel lors de la frappe
+
+### Animations
+- **Confettis** lors des succès (quiz ≥80%, défi complété)
+- Animations fluides et récompensantes
+
 ## Catégories de raccourcis
 
 | Catégorie | Exemples |

@@ -1127,6 +1127,219 @@
             border-color: currentColor;
         }
 
+        /* Confetti Animation */
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1001;
+            overflow: hidden;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: confetti-fall 3s ease-out forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                opacity: 1;
+                transform: translateY(0) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(100vh) rotate(720deg);
+            }
+        }
+
+        /* Keyboard Visualization */
+        .keyboard-visual {
+            display: grid;
+            gap: 4px;
+            max-width: 700px;
+            margin: 1rem auto;
+            padding: 1rem;
+            background: var(--bg);
+            border-radius: 16px;
+        }
+
+        .keyboard-row {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+        }
+
+        .kb-key {
+            min-width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: all 0.15s;
+            cursor: default;
+        }
+
+        .kb-key.wide { min-width: 60px; }
+        .kb-key.wider { min-width: 80px; }
+        .kb-key.widest { min-width: 100px; }
+        .kb-key.space { min-width: 200px; }
+
+        .kb-key.highlight {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.4);
+        }
+
+        .kb-key.pressed {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+
+        @media (max-width: 600px) {
+            .kb-key {
+                min-width: 28px;
+                height: 32px;
+                font-size: 0.6rem;
+            }
+            .kb-key.wide { min-width: 42px; }
+            .kb-key.wider { min-width: 56px; }
+            .kb-key.widest { min-width: 70px; }
+            .kb-key.space { min-width: 120px; }
+        }
+
+        /* Stats Charts */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-card-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            height: 150px;
+            padding: 1rem;
+            background: var(--bg);
+            border-radius: 12px;
+        }
+
+        .bar-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .bar {
+            width: 100%;
+            max-width: 40px;
+            border-radius: 4px 4px 0 0;
+            transition: height 0.5s ease;
+        }
+
+        .bar-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .bar-value {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Daily Challenge */
+        .daily-challenge {
+            background: linear-gradient(135deg, #FF9500, #FF6B00);
+            color: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .daily-challenge-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .daily-challenge-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .daily-challenge-timer {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .daily-progress-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .daily-progress-fill {
+            height: 100%;
+            background: white;
+            transition: width 0.3s;
+        }
+
+        .daily-reward {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .daily-completed {
+            background: linear-gradient(135deg, #34C759, #28A745);
+        }
+
         /* Install PWA Banner */
         .install-banner {
             position: fixed;
@@ -1273,8 +1486,30 @@
     </nav>
 
     <main>
+        <!-- Confetti Container -->
+        <div class="confetti-container" id="confettiContainer"></div>
+
         <!-- Dashboard Section -->
         <section id="dashboard" class="section active">
+            <!-- Daily Challenge -->
+            <div class="daily-challenge" id="dailyChallenge">
+                <div class="daily-challenge-header">
+                    <span>🎯</span>
+                    <span class="daily-challenge-title">Défi du jour</span>
+                </div>
+                <p id="dailyChallengeText">Maîtrisez 5 nouveaux raccourcis aujourd'hui!</p>
+                <div class="daily-progress-bar">
+                    <div class="daily-progress-fill" id="dailyProgressFill" style="width: 0%"></div>
+                </div>
+                <p id="dailyProgressText">0 / 5 complétés</p>
+                <div class="daily-challenge-timer" id="dailyTimer">Renouvellement dans: --:--:--</div>
+                <div class="daily-reward">
+                    <span>🏆</span>
+                    <span>Récompense: +50 XP</span>
+                </div>
+                <button class="btn btn-primary" style="margin-top: 1rem; background: rgba(255,255,255,0.2);" onclick="startDailyChallenge()">Commencer le défi</button>
+            </div>
+
             <div class="dashboard-grid">
                 <div class="card">
                     <h3 class="card-title">Progression</h3>
@@ -1328,6 +1563,33 @@
                             <div class="mode-btn-desc">10 questions</div>
                         </button>
                     </div>
+                </div>
+            </div>
+
+            <!-- Statistics Section -->
+            <div class="card" style="margin-top: 1rem;">
+                <h3 class="card-title">Statistiques détaillées</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-value" id="statTotalSessions">0</div>
+                        <div class="stat-card-label">Sessions totales</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-value" id="statAvgScore">0%</div>
+                        <div class="stat-card-label">Score moyen</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-value" id="statBestStreak">0</div>
+                        <div class="stat-card-label">Meilleur streak</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-value" id="statDaysActive">0</div>
+                        <div class="stat-card-label">Jours actifs</div>
+                    </div>
+                </div>
+                <h4 style="margin: 1rem 0 0.5rem; font-size: 1rem;">Maîtrise par catégorie</h4>
+                <div class="bar-chart" id="categoryChart">
+                    <!-- Bars will be populated by JS -->
                 </div>
             </div>
         </section>
@@ -1439,6 +1701,99 @@
 
                     <div class="keyboard-input" id="keyboardInput">
                         <span style="color: var(--text-secondary);">Appuyez sur les touches...</span>
+                    </div>
+
+                    <!-- Visual Keyboard -->
+                    <div class="keyboard-visual" id="visualKeyboard">
+                        <div class="keyboard-row">
+                            <div class="kb-key" data-key="ESC">Esc</div>
+                            <div class="kb-key" data-key="F1">F1</div>
+                            <div class="kb-key" data-key="F2">F2</div>
+                            <div class="kb-key" data-key="F3">F3</div>
+                            <div class="kb-key" data-key="F4">F4</div>
+                            <div class="kb-key" data-key="F5">F5</div>
+                            <div class="kb-key" data-key="F6">F6</div>
+                            <div class="kb-key" data-key="F7">F7</div>
+                            <div class="kb-key" data-key="F8">F8</div>
+                            <div class="kb-key" data-key="F9">F9</div>
+                            <div class="kb-key" data-key="F10">F10</div>
+                            <div class="kb-key" data-key="F11">F11</div>
+                            <div class="kb-key" data-key="F12">F12</div>
+                        </div>
+                        <div class="keyboard-row">
+                            <div class="kb-key" data-key="`">`</div>
+                            <div class="kb-key" data-key="1">1</div>
+                            <div class="kb-key" data-key="2">2</div>
+                            <div class="kb-key" data-key="3">3</div>
+                            <div class="kb-key" data-key="4">4</div>
+                            <div class="kb-key" data-key="5">5</div>
+                            <div class="kb-key" data-key="6">6</div>
+                            <div class="kb-key" data-key="7">7</div>
+                            <div class="kb-key" data-key="8">8</div>
+                            <div class="kb-key" data-key="9">9</div>
+                            <div class="kb-key" data-key="0">0</div>
+                            <div class="kb-key" data-key="-">-</div>
+                            <div class="kb-key" data-key="=">=</div>
+                            <div class="kb-key wide" data-key="⌫">⌫</div>
+                        </div>
+                        <div class="keyboard-row">
+                            <div class="kb-key wide" data-key="TAB">Tab</div>
+                            <div class="kb-key" data-key="Q">Q</div>
+                            <div class="kb-key" data-key="W">W</div>
+                            <div class="kb-key" data-key="E">E</div>
+                            <div class="kb-key" data-key="R">R</div>
+                            <div class="kb-key" data-key="T">T</div>
+                            <div class="kb-key" data-key="Y">Y</div>
+                            <div class="kb-key" data-key="U">U</div>
+                            <div class="kb-key" data-key="I">I</div>
+                            <div class="kb-key" data-key="O">O</div>
+                            <div class="kb-key" data-key="P">P</div>
+                            <div class="kb-key" data-key="[">[</div>
+                            <div class="kb-key" data-key="]">]</div>
+                            <div class="kb-key" data-key="\">\</div>
+                        </div>
+                        <div class="keyboard-row">
+                            <div class="kb-key wider" data-key="CAPS">Caps</div>
+                            <div class="kb-key" data-key="A">A</div>
+                            <div class="kb-key" data-key="S">S</div>
+                            <div class="kb-key" data-key="D">D</div>
+                            <div class="kb-key" data-key="F">F</div>
+                            <div class="kb-key" data-key="G">G</div>
+                            <div class="kb-key" data-key="H">H</div>
+                            <div class="kb-key" data-key="J">J</div>
+                            <div class="kb-key" data-key="K">K</div>
+                            <div class="kb-key" data-key="L">L</div>
+                            <div class="kb-key" data-key=";">;</div>
+                            <div class="kb-key" data-key="'">'</div>
+                            <div class="kb-key wider" data-key="↵">↵</div>
+                        </div>
+                        <div class="keyboard-row">
+                            <div class="kb-key widest" data-key="⇧">⇧ Shift</div>
+                            <div class="kb-key" data-key="Z">Z</div>
+                            <div class="kb-key" data-key="X">X</div>
+                            <div class="kb-key" data-key="C">C</div>
+                            <div class="kb-key" data-key="V">V</div>
+                            <div class="kb-key" data-key="B">B</div>
+                            <div class="kb-key" data-key="N">N</div>
+                            <div class="kb-key" data-key="M">M</div>
+                            <div class="kb-key" data-key=",">,</div>
+                            <div class="kb-key" data-key=".">.</div>
+                            <div class="kb-key" data-key="/">/</div>
+                            <div class="kb-key widest" data-key="⇧">⇧ Shift</div>
+                        </div>
+                        <div class="keyboard-row">
+                            <div class="kb-key wide" data-key="FN">Fn</div>
+                            <div class="kb-key wide" data-key="⌃">⌃</div>
+                            <div class="kb-key wide" data-key="⌥">⌥</div>
+                            <div class="kb-key wider" data-key="⌘">⌘</div>
+                            <div class="kb-key space" data-key="ESPACE">Espace</div>
+                            <div class="kb-key wider" data-key="⌘">⌘</div>
+                            <div class="kb-key wide" data-key="⌥">⌥</div>
+                            <div class="kb-key" data-key="←">←</div>
+                            <div class="kb-key" data-key="↑">↑</div>
+                            <div class="kb-key" data-key="↓">↓</div>
+                            <div class="kb-key" data-key="→">→</div>
+                        </div>
                     </div>
 
                     <div class="keyboard-hint">
@@ -2819,10 +3174,358 @@
             });
         }
 
+        // ============================================
+        // CONFETTI ANIMATION
+        // ============================================
+
+        function createConfetti() {
+            const container = document.getElementById('confettiContainer');
+            const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F'];
+
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                confetti.style.animationDuration = (2 + Math.random() * 2) + 's';
+
+                // Random shapes
+                const shape = Math.random();
+                if (shape < 0.33) {
+                    confetti.style.borderRadius = '50%';
+                } else if (shape < 0.66) {
+                    confetti.style.transform = 'rotate(45deg)';
+                }
+
+                container.appendChild(confetti);
+            }
+
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 4000);
+        }
+
+        // ============================================
+        // KEYBOARD VISUALIZATION
+        // ============================================
+
+        function highlightKeys(keys) {
+            // Clear all highlights
+            document.querySelectorAll('.kb-key').forEach(el => {
+                el.classList.remove('highlight', 'pressed');
+            });
+
+            // Highlight expected keys
+            keys.forEach(key => {
+                const normalizedKey = key.toUpperCase();
+                document.querySelectorAll('.kb-key').forEach(el => {
+                    const dataKey = el.dataset.key?.toUpperCase();
+                    if (dataKey === normalizedKey ||
+                        (normalizedKey === 'SPACE' && dataKey === 'ESPACE') ||
+                        (normalizedKey === 'ESPACE' && dataKey === 'ESPACE') ||
+                        (normalizedKey === 'ENTER' && dataKey === '↵') ||
+                        (normalizedKey === 'TAB' && dataKey === 'TAB') ||
+                        (normalizedKey === 'ESCAPE' && dataKey === 'ESC') ||
+                        el.textContent.toUpperCase().includes(normalizedKey)) {
+                        el.classList.add('highlight');
+                    }
+                });
+            });
+        }
+
+        function markKeyPressed(key) {
+            const normalizedKey = key.toUpperCase();
+            document.querySelectorAll('.kb-key').forEach(el => {
+                const dataKey = el.dataset.key?.toUpperCase();
+                if (dataKey === normalizedKey ||
+                    (normalizedKey === 'SPACE' && dataKey === 'ESPACE') ||
+                    (normalizedKey === 'ESPACE' && dataKey === 'ESPACE') ||
+                    el.textContent.toUpperCase().includes(normalizedKey)) {
+                    el.classList.add('pressed');
+                }
+            });
+        }
+
+        // Override quiz keydown to update visual keyboard
+        const originalHandleQuizKeydown = handleQuizKeydown;
+        handleQuizKeydown = function(e) {
+            originalHandleQuizKeydown(e);
+            const key = keyMap[e.key] || e.key.toUpperCase();
+            markKeyPressed(key);
+        };
+
+        // Override showCurrentQuestion to highlight expected keys
+        const originalShowCurrentQuestion = showCurrentQuestion;
+        showCurrentQuestion = function() {
+            originalShowCurrentQuestion();
+            const q = state.quizQuestions[state.quizIndex];
+            if (q) {
+                highlightKeys(q.keys);
+            }
+        };
+
+        // ============================================
+        // ADVANCED STATISTICS
+        // ============================================
+
+        let stats = {
+            totalSessions: 0,
+            quizScores: [],
+            bestStreak: 0,
+            daysActive: [],
+            lastActiveDate: null
+        };
+
+        function loadStats() {
+            const saved = localStorage.getItem('macShortcutsStats');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                stats = { ...stats, ...parsed };
+            }
+            updateStatsDisplay();
+        }
+
+        function saveStats() {
+            localStorage.setItem('macShortcutsStats', JSON.stringify(stats));
+        }
+
+        function recordSession() {
+            stats.totalSessions++;
+
+            const today = new Date().toDateString();
+            if (!stats.daysActive.includes(today)) {
+                stats.daysActive.push(today);
+            }
+            stats.lastActiveDate = today;
+
+            if (state.streak > stats.bestStreak) {
+                stats.bestStreak = state.streak;
+            }
+
+            saveStats();
+            updateStatsDisplay();
+        }
+
+        function recordQuizScore(score, total) {
+            const percent = Math.round((score / total) * 100);
+            stats.quizScores.push(percent);
+            if (stats.quizScores.length > 50) {
+                stats.quizScores.shift(); // Keep last 50 scores
+            }
+            saveStats();
+            updateStatsDisplay();
+        }
+
+        function updateStatsDisplay() {
+            document.getElementById('statTotalSessions').textContent = stats.totalSessions;
+            document.getElementById('statBestStreak').textContent = stats.bestStreak;
+            document.getElementById('statDaysActive').textContent = stats.daysActive.length;
+
+            const avgScore = stats.quizScores.length > 0
+                ? Math.round(stats.quizScores.reduce((a, b) => a + b, 0) / stats.quizScores.length)
+                : 0;
+            document.getElementById('statAvgScore').textContent = avgScore + '%';
+
+            updateCategoryChart();
+        }
+
+        function updateCategoryChart() {
+            const chart = document.getElementById('categoryChart');
+            const categories = getCategories();
+
+            const categoryStats = categories.map(cat => {
+                const catShortcuts = shortcuts.filter(s => s.category === cat);
+                const mastered = catShortcuts.filter(s => state.masteredShortcuts.has(s.id)).length;
+                const percent = catShortcuts.length > 0 ? Math.round((mastered / catShortcuts.length) * 100) : 0;
+                return { name: cat, percent, mastered, total: catShortcuts.length };
+            });
+
+            const colors = ['#007AFF', '#34C759', '#FF9500', '#FF3B30', '#5856D6', '#AF52DE', '#00C7BE', '#FF2D55'];
+
+            chart.innerHTML = categoryStats.map((cat, i) => `
+                <div class="bar-item">
+                    <div class="bar-value">${cat.percent}%</div>
+                    <div class="bar" style="height: ${Math.max(cat.percent, 5)}%; background: ${colors[i % colors.length]};"></div>
+                    <div class="bar-label">${cat.name.substring(0, 6)}</div>
+                </div>
+            `).join('');
+        }
+
+        // Override endQuiz to record stats and show confetti
+        const originalEndQuiz = endQuiz;
+        endQuiz = function() {
+            originalEndQuiz();
+            recordQuizScore(state.quizScore, state.quizQuestions.length);
+            recordSession();
+
+            const percent = Math.round((state.quizScore / state.quizQuestions.length) * 100);
+            if (percent >= 80) {
+                createConfetti();
+            }
+        };
+
+        // ============================================
+        // DAILY CHALLENGE
+        // ============================================
+
+        let dailyChallenge = {
+            date: null,
+            target: 5,
+            progress: 0,
+            completed: false,
+            shortcuts: []
+        };
+
+        function loadDailyChallenge() {
+            const saved = localStorage.getItem('macShortcutsDailyChallenge');
+            if (saved) {
+                dailyChallenge = JSON.parse(saved);
+            }
+
+            const today = new Date().toDateString();
+            if (dailyChallenge.date !== today) {
+                // New day, new challenge
+                generateDailyChallenge();
+            }
+
+            updateDailyChallengeUI();
+            startDailyTimer();
+        }
+
+        function generateDailyChallenge() {
+            const today = new Date().toDateString();
+
+            // Get shortcuts not yet mastered
+            const unmastered = shortcuts.filter(s => !state.masteredShortcuts.has(s.id));
+            const shuffled = [...unmastered].sort(() => Math.random() - 0.5);
+
+            dailyChallenge = {
+                date: today,
+                target: 5,
+                progress: 0,
+                completed: false,
+                shortcuts: shuffled.slice(0, 5).map(s => s.id)
+            };
+
+            saveDailyChallenge();
+        }
+
+        function saveDailyChallenge() {
+            localStorage.setItem('macShortcutsDailyChallenge', JSON.stringify(dailyChallenge));
+        }
+
+        function updateDailyChallengeUI() {
+            const container = document.getElementById('dailyChallenge');
+            const progressFill = document.getElementById('dailyProgressFill');
+            const progressText = document.getElementById('dailyProgressText');
+            const challengeText = document.getElementById('dailyChallengeText');
+
+            const percent = (dailyChallenge.progress / dailyChallenge.target) * 100;
+            progressFill.style.width = percent + '%';
+            progressText.textContent = `${dailyChallenge.progress} / ${dailyChallenge.target} complétés`;
+
+            if (dailyChallenge.completed) {
+                container.classList.add('daily-completed');
+                challengeText.textContent = 'Défi complété ! Bravo !';
+                container.querySelector('button').style.display = 'none';
+            } else {
+                container.classList.remove('daily-completed');
+                challengeText.textContent = `Maîtrisez ${dailyChallenge.target} nouveaux raccourcis aujourd'hui!`;
+                container.querySelector('button').style.display = 'inline-flex';
+            }
+        }
+
+        function startDailyTimer() {
+            function updateTimer() {
+                const now = new Date();
+                const midnight = new Date(now);
+                midnight.setHours(24, 0, 0, 0);
+
+                const diff = midnight - now;
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                document.getElementById('dailyTimer').textContent =
+                    `Renouvellement dans: ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+
+            updateTimer();
+            setInterval(updateTimer, 1000);
+        }
+
+        function startDailyChallenge() {
+            if (dailyChallenge.completed) {
+                showNotification('Défi déjà complété !');
+                return;
+            }
+
+            // Start flashcards with daily challenge shortcuts
+            const challengeShortcuts = shortcuts.filter(s => dailyChallenge.shortcuts.includes(s.id));
+
+            if (challengeShortcuts.length === 0) {
+                showNotification('Tous les raccourcis sont maîtrisés !');
+                return;
+            }
+
+            state.currentCards = challengeShortcuts;
+            state.currentCardIndex = 0;
+
+            showSection('flashcards');
+            document.getElementById('flashcardStart').style.display = 'none';
+            document.getElementById('flashcardArea').style.display = 'block';
+            showCurrentCard();
+
+            playSound('click');
+        }
+
+        function checkDailyProgress(shortcutId) {
+            if (dailyChallenge.completed) return;
+
+            if (dailyChallenge.shortcuts.includes(shortcutId)) {
+                const progress = state.shortcutProgress[shortcutId];
+                if (progress && progress.level >= 2) {
+                    dailyChallenge.progress++;
+
+                    if (dailyChallenge.progress >= dailyChallenge.target) {
+                        dailyChallenge.completed = true;
+                        addXP(50); // Bonus XP
+                        createConfetti();
+                        showNotification('🎉 Défi quotidien complété ! +50 XP bonus!');
+                    }
+
+                    saveDailyChallenge();
+                    updateDailyChallengeUI();
+                }
+            }
+        }
+
+        // Override rateCard to check daily progress and trigger confetti
+        const originalRateCard = rateCard;
+        rateCard = function(rating) {
+            const card = state.currentCards[state.currentCardIndex];
+            originalRateCard(rating);
+
+            if (rating === 3) {
+                checkDailyProgress(card.id);
+                // Small confetti burst for easy rating
+                if (Math.random() > 0.7) {
+                    createConfetti();
+                }
+            }
+        };
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+
         // Initialize
         loadState();
         loadSettings();
         loadUserShortcuts();
+        loadStats();
+        loadDailyChallenge();
         initSuggestCategories();
 
         // Initialize audio on first user interaction
